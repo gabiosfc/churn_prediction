@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predição de Churn</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #0056b3;
+            font-size: 28px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .input-group, .radio-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group input[type="number"] {
+            font-size: 16px;
+        }
+
+        input[type="number"],
+        input[type="submit"] {
+            padding: 12px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            font-size: 20px;
+            font-weight: 600;
+            color: #007bff;
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #007bff;
+            border-radius: 6px;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #0056b3;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .radio-group label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if request.method == 'POST' %}
+            <h1>Resultado da Predição</h1>
+            <p class="result">Predição de Churn: {{ churn }}</p>
+            <a href="{{ url_for('home') }}">Voltar ao Formulário</a>
+        {% else %}
+            <h1>Formulário de Predição de Churn</h1>
+            <form method="post">
+                <div class="radio-group">
+                    <label>Gênero:</label>
+                    <label><input type="radio" name="gender_ajustado" value="0" required> Feminino</label>
+                    <label><input type="radio" name="gender_ajustado" value="1" required> Masculino</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Parceiro:</label>
+                    <label><input type="radio" name="Partner_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="Partner_ajustado" value="1" required> Sim</label>
+                </div>
+
+                <div class="input-group">
+                    <label for="tenure">Tempo de Serviço (0 a 72):</label>
+                    <input type="number" id="tenure" name="tenure" step="0.1" required>
+                </div>
+
+                <div class="radio-group">
+                    <label>Linha Múltipla:</label>
+                    <label><input type="radio" name="MultipleLine_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="MultipleLine_ajustado" value="1" required> Sim</label>
+                    <label><input type="radio" name="MultipleLine_ajustado" value="2" required> Sem serviço telefônico</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Serviço de Internet:</label>
+                    <label><input type="radio" name="InternetServ_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="InternetServ_ajustado" value="1" required> DSL</label>
+                    <label><input type="radio" name="InternetServ_ajustado" value="2" required> Fibra óptica</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Segurança Online:</label>
+                    <label><input type="radio" name="OnlineSecurity_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="OnlineSecurity_ajustado" value="1" required> Sim</label>
+                    <label><input type="radio" name="OnlineSecurity_ajustado" value="2" required> Sem serviço de internet</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Backup Online:</label>
+                    <label><input type="radio" name="OnlineBackup_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="OnlineBackup_ajustado" value="1" required> Sim</label>
+                    <label><input type="radio" name="OnlineBackup_ajustado" value="2" required> Sem serviço de internet</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Proteção do Dispositivo:</label>
+                    <label><input type="radio" name="DeviceProtection_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="DeviceProtection_ajustado" value="1" required> Sim</label>
+                    <label><input type="radio" name="DeviceProtection_ajustado" value="2" required> Sem serviço de internet</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Suporte Técnico:</label>
+                    <label><input type="radio" name="TechSupport_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="TechSupport_ajustado" value="1" required> Sim</label>
+                    <label><input type="radio" name="TechSupport_ajustado" value="2" required> Sem serviço de internet</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Streaming TV:</label>
+                    <label><input type="radio" name="StreamingTV_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="StreamingTV_ajustado" value="1" required> Sim</label>
+                    <label><input type="radio" name="StreamingTV_ajustado" value="2" required> Sem serviço de internet</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Streaming de Filmes:</label>
+                    <label><input type="radio" name="StreamingMovies_ajustado" value="0" required> Não</label>
+                    <label><input type="radio" name="StreamingMovies_ajustado" value="1" required> Sim</label>
+                    <label><input type="radio" name="StreamingMovies_ajustado" value="2" required> Sem serviço de internet</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Contrato:</label>
+                    <label><input type="radio" name="Contract_ajustado" value="0" required> Mês a mês</label>
+                    <label><input type="radio" name="Contract_ajustado" value="1" required> Um ano</label>
+                    <label><input type="radio" name="Contract_ajustado" value="2" required> Dois anos</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Método de Pagamento:</label>
+                    <label><input type="radio" name="PaymentMethod_ajustado" value="0" required> Cartão de crédito</label>
+                    <label><input type="radio" name="PaymentMethod_ajustado" value="1" required> Transferência bancária</label>
+                    <label><input type="radio" name="PaymentMethod_ajustado" value="2" required> Cheque enviado</label>
+                </div>
+
+                <label for="MonthlyCharges">Cobranças Mensais (18.3 a 119):</label>
+                <input type="number" id="MonthlyCharges" name="MonthlyCharges" step="0.1" required><br>
+
+                <input type="submit" value="Enviar">
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
